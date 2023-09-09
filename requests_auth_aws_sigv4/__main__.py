@@ -6,6 +6,7 @@ import logging
 import os.path
 import re
 import sys
+import json
 from collections import OrderedDict
 
 import requests
@@ -69,8 +70,15 @@ def run(run_args=None):
         log.info("Guessing region from url: %s", m.group(2))
         args.region = m.group(2)
     if args.data:
-        args.request = 'POST'
-        post_data = dict(map(lambda d: d.split('='), args.data))
+            args.request = 'POST'
+            try:
+                #data_str = json.dumps(args.data)
+                post_data = json.dumps(args.data)  # Parse the data argument as JSON
+                print(post_data)
+                print("Type of args.data:", type(post_data))
+            except json.JSONDecodeError as e:
+                print("Error parsing JSON data:", e)
+                post_data = dict(map(lambda d: d.split('='), args.data))
     else:
         post_data = None
     if args.header:
